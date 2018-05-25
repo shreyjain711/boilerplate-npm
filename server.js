@@ -37,6 +37,29 @@ app.route('/')
     .get(function(req, res) {
 		  res.sendFile(process.cwd() + '/views/index.html');
     })
+app.get('/:date',function (req,res){
+  
+  let months = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+  ];
+  let data = req.params.date;
+  let resOb = { unix : null, natural : null};
+  if( isNaN(parseInt(data)) ){
+    let d = new Date(data);
+    if(!isNaN(d.getTime())){
+      resOb.unix = d.getTime()/1000;
+      resOb.natural = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+  } else {
+    if( (parseInt(data).toString().length === data.length) || (parseInt(data).toString().length === data.length-1) ){
+      let d = new Date(parseInt(data));
+      resOb.unix = d.getTime();
+      resOb.natural = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+  }
+  
+  res.send(JSON.stringify(resOb));
+})
 
 // Respond not found to all the wrong routes
 app.use(function(req, res, next){
